@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>SPA</title>
+	<!-- stylesheets -->
+	<link rel="stylesheet" href="css/spa.css" type="text/css">
+	<link rel="stylesheet" href="css/spa.shell.css" type="text/css">
+	<!-- third-party JavaScript -->
+	<script type="text/javascript" src="js/jq/jquery-1.9.1.min.js"></script>
+	<script type="text/javascript" src="js/jq/jquery.uriAnchor.js"></script>
+	<!-- our JavaScript -->
+	<script type="text/javascript" src="js/spa.js"></script>
+	<script type="text/javascript" src="js/spa.shell.js"></script>
+	<script>
+		/*传统的网页，把脚本放到body容器后面，静态的HTML和CSS在JavaScript加载完成之前显示，通常会使页面渲染更快
+		 * 单页面应用，他们使用JavaScript来生成HTML，因为将脚本放置在头部之外，并不能更快的渲染页面。相反，我们放在head区块里，以便改进组织结构和易读性。
+		 * */
+		$(function(){
+			spa.initModule($('#spa'));
+		});
+
+	</script>
+</head>
+<body>
+	<div id="spa"></div>
+</body>
+</html>
