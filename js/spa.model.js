@@ -44,7 +44,7 @@ spa.model = (function (){
 
                 if(!person_map.name){ continue PERSON; }
 
-                if( stateMap.user && stateMap.user.id === person_map.id) {
+                if( stateMap.user && stateMap.user.id === person_map._id) {
                     stateMap.user.css_map = person.css_map;
                     continue PERSON;
                 }

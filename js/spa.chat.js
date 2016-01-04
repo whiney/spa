@@ -72,7 +72,6 @@ spa.chat = (function () {
         set_chat_anchor: null
     },
     stateMap  = {
-       // $container : null
         $append_target: null,
         position_type: 'closed',
         px_per_em: 0,
@@ -240,7 +239,7 @@ spa.chat = (function () {
         }else if( stateMap.position_type === 'closed' ) {
             set_chat_anchor( 'opened' );
         } return false;
-    }
+    };
 
     onSubmitMsg = function (event) {
         var msg_text = jqueryMap.$input.val();
@@ -253,9 +252,103 @@ spa.chat = (function () {
         },250);
         return false;
     }
-
+    //当用户点击或者轻击用户名时候，触发这个事件，使用model.chat.set_chatee方法来设置听者
     onTapList = function (event) {
+        var $tapped = $(event.elem_target), chatee_id;
+        if(!$tapped.hasClass('spa-chat-list-name')){return false;}
 
+        chatee_id = $tapped.attr('data-id');
+        if(!chatee_id) { return false;}
+
+        configMap.chat_model.set_chatee(chatee_id);
+        return false;
+    };
+    //
+    onSetchatee = function( event, arg_map ) {
+        var new_chatee = arg_map.new_chatee,
+            old_chatee = arg_map.old_chatee;
+
+        jqueryMap.$input.focus();
+        if( !new_chatee ){
+            if( old_chatee ){
+                writeAlert( old_chatee.name + 'has left the chat' );
+            }else{
+                writeAlert( 'Your friend has left the chat' );
+            }
+            jqueryMap.$title.text('Chat');
+            return false;
+        }
+
+        jqueryMap.$list_box
+            .find('.spa-chat-list-name')
+            .removeClass('spa-x-select')
+            .end()
+            .find('[data-id='  + arg_map.new_chatee.id + ']')
+            .addClass('spa-x-select');
+
+        writeAlert('Now chatting with' + arg_map.new_chatee.name);
+        jqueryMap.$title.text('Chat with' + arg_map.new_chatee.name);
+        return true;
+    }
+
+    onListchange = function ( event ) {
+        var vlist_html = String(),
+            people_db = configMap.peopel_model.get_db(),
+            chatee = configMap.chat_model.get_chatee();
+
+        people_db.each(function( person, idx ) {
+            var select_class = '';
+
+            if(person.get_is_anon() || person.get_is_user()){return true}
+
+            if(chatee && chatee.id === person.id) {
+                select_class = 'spa-x-select';
+            }
+            list_html
+                += '<div class="spa-chat-list-name"'
+                + select_class + '"data-id="'+ person.id + '">'
+                + spa.util_b.encodeHtml(person.name) + '</div>';
+        });
+
+        if(!list_html) {
+            list_html = String()
+                + '<div class="spa-chat-list-note">'
+                + 'To chat alone is the fate of all great souls...<br><br>'
+                + 'No one is online'
+                + '</div>';
+            clearChat();
+        }
+
+        jqueryMap.$list_box.html(list_html);
+    };
+
+    onUpdatechat = function (event,msg_map) {
+        var is_user, sender_id = msg_map.sender_id,msg_text = msg_map.msg_text,
+            chatee = configMap.chat_model.get_chatee() || {},
+            sender = configMap.peopel_model.get_by_cid( sender_id );
+
+        if( !sender ) {
+            writeAlert( msg_text );
+            return false;
+        }
+
+        is_user = sender.get_is_user();
+
+        if( !(is_user || sender_id === chatee.id))
+            configMap.chat_model.set_chatee(sender_id);
+
+        writeAlert(sender.name,msg_text,is_user);
+
+        if(is_user){
+            jqueryMap.$input.val('');
+            jqueryMap.$input.focus();
+        }
+    };
+
+    onLogin = function (event, login_user){
+        configMap.set_chat_anchor('closed');
+        jqueryMap.$title.text('Chat');
+        clearChat();
     }
     //创建configModule方法，每当功能模块设置setting时调用
     configModule = function ( input_map ) {
@@ -268,17 +361,28 @@ spa.chat = (function () {
     };
     //添加initModule方法，用于执行模块
     initModule = function ( $append_target ) {
-        //$container.html( configMap.main_html );//使用html模板填充聊天滑块容器
-        //stateMap.$container = $container;
-        //setJqueryMap();
-        $append_target.append( configMap.main_html );
+        var $list_box;
         stateMap.$append_target = $append_target;
+        $append_target.append( configMap.main_html );
         setJqueryMap();
         setPxSizes();
 
         jqueryMap.$toggle.prop( 'title', configMap.slider_closed_title);
-        jqueryMap.$head.click( onClickToggle );
+        jqueryMap.$head.click( onTapToggle );
         stateMap.position_type = 'closed';
+
+        $list_box = jqueryMap.$list_box;
+        $.gevent.subscribe($list_box, 'spa-listchange', onListchange);
+        $.gevent.subscribe($list_box, 'spa-setchatee', onSetchatee);
+        $.gevent.subscribe($list_box, 'spa-updatechat', onUpdatechat);
+        $.gevent.subscribe($list_box, 'spa-login', onLogin);
+        $.gevent.subscribe($list_box, 'spa-logout', onLogout);
+
+        jqueryMap.$head.bind('utap', onTapToggle);
+        jqueryMap.$list_box.bind('utap',onTapList);
+        jqueryMap.$send.bind('utap',onSubmitMsg);
+        jqueryMap.$form.bind('submit',onSubmitMsg);
+
         return true;
     };
     //到处模板方法，这两个方法几乎是所有功能模块的标配方法
