@@ -3,15 +3,18 @@
 * shell module for SPA
 * */
 spa.shell = (function(){
+    'use strict';
     var configMap = {
         anchor_schema_map : {
-            chat : {open:true,closed:true}
+            chat : {opened:true,closed:true}
         },
         main_html : String()
         + '<div class="spa-shell-head">'
-          +  '<div class="spa-shell-head-logo"></div>'
+          +  '<div class="spa-shell-head-logo">'
+            + '<h1>SPA</h1>'
+            + '<p>javascript end to end</p>'
+          +  '</div>'
           +'<div class="spa-shell-head-acct"></div>'
-          +'<div class="spa-shell-head-search"></div>'
         + '</div>'
         + '<div class="spa-shell-main spa-x-closed">'
           + '<div class="spa-shell-main-nav"></div>'
@@ -20,6 +23,7 @@ spa.shell = (function(){
         + '<div class="spa-shell-foot"></div>'
         + '<div class="spa-shell-chat"></div>'
         + '<div class="spa-shell-modal"></div>',
+        resize_interval     :200,//考虑到尺寸调整事件，在设置中创建一个200毫秒的间隔字段
         chat_extend_time    :1000,
         chat_retract_time   :300,
         chat_extend_height  :450,
@@ -28,14 +32,29 @@ spa.shell = (function(){
         chat_retract_title  :'click to extend'
     },
     stateMap = {
-        $container        : null,
+        $container        : undefined,
         anchor_map        :{},
-        is_chat_retracted :true
+        resize_idto       :undefined
+        //is_chat_retracted :true
+
     },
     jqueryMap = {},
-    copyAnchorMap,setJqueryMap,toggleChat,initModule,
-    changeAnchorPart,onHashchange,
-    onClickChat,initModule;
+    copyAnchorMap,setJqueryMap,onResize,toggleChat,
+    changeAnchorPart,onHashchange,onClickChat,
+    onTapAcct, onLogin, onLogout,
+    setChatAnchor,initModule;
+
+    onResize = function () {
+        if ( stateMap.resize_idto ) { return true; }
+
+        spa.chat.handleResize();
+        stateMap.resize_idto = setTimeout(
+            function () { stateMap.resize_idto = undefined; },
+            configMap.resize_interval
+        );
+
+        return true;
+    }
     //使用jquery的extengd（）工具方法来复制对象，因为所有的JS对象都是按照引用传递的。
     copyAnchorMap = function () {
         return $.extend(true,{},stateMap.anchor_map)
@@ -68,6 +87,7 @@ spa.shell = (function(){
     }
     onHashchange = function ( event ) {
         var anchor_map_previous =  copyAnchorMap(),
+            is_ok = true,
             anchor_map_proposed,
             _s_chat_previous,_s_chat_proposed,
             s_chat_proposed;
@@ -85,16 +105,25 @@ spa.shell = (function(){
         if(!anchor_map_previous || _s_chat_previous !== _s_chat_proposed){
             s_chat_proposed = anchor_map_proposed.chat;
             switch (s_chat_proposed){
-                case 'open' :
-                    toggleChat(true);
+                case 'opened' :
+                    is_ok = spa.chat.setSliderPosition('opened');
                     break;
                 case 'closed' :
-                    toggleChat(false);
+                    is_ok = spa.chat.setSliderPosition('closed');
                     break
                 default :
-                    toggleChat(false);
+                    spa.chat.setSliderPosition('closed');
                     delete  anchor_map_proposed.chat;
                     $.uriAnchor.setAnchor(anchor_map_proposed,null,true);
+            }
+        }
+        if(!is_ok){
+            if( anchor_map_previous ){
+                $.uriAnchor.setAnchor( anchor_map_previous, null, true);
+                stateMap.anchor_map = anchor_map_previous;
+            }else{
+                delete anchor_map_proposed.chat;
+                $.uriAnchor.setAnchor( anchor_map_proposed, null, true);
             }
         }
         return false;
@@ -103,8 +132,10 @@ spa.shell = (function(){
         var $container = stateMap.$container;
         jqueryMap = {
             $container:$container,
-            $chat : $container.find('.spa-shell-chat')
-        }
+            $acct     :$container.find('.spa-shell-head-acct'),
+            $nav      :$container.find('.spa-shell-main-nav')
+            //$chat : $container.find('.spa-shell-chat')
+        };
     };
     toggleChat = function(do_extend,callback){
       var px_chat_ht = jqueryMap.$chat.height(),
@@ -145,6 +176,29 @@ spa.shell = (function(){
         });
         return false;
     };
+    setChatAnchor = function (position_type) {
+        return changeAnchorPart({ chat: position_type });
+    };
+
+    onTapAcct = function (event) {
+        var acct_text,user_name, user=spa.model.people.get_user();
+        if(user.get_is_anon()){
+            user_name = prompt('Please sing-in');
+            spa.model.people.login( user_name );
+            jqueryMap.$acct.text( '...processing...');
+        }else{
+            spa.model.people.logout();
+        }
+        return false;
+    };
+
+    onLogin = function (event ,login_user) {
+        jqueryMap.$acct.text( login_user.name );
+    };
+
+    onLogout = function (event ,login_user) {
+        jqueryMap.$acct.text( 'Please sing-in');
+    };
     initModule = function($container){
         //设置URI锚
         $.uriAnchor.configModule({
@@ -153,11 +207,19 @@ spa.shell = (function(){
         stateMap.$container = $container;
         $container.html(configMap.main_html);
         setJqueryMap();
-        spa.chat.configModule( {} );
-        spa.chat.initModule( jqueryMap.$chat );
+        spa.chat.configModule( {
+            set_chat_anchor : setChatAnchor,
+            chat_model :spa.model.chat,
+            peopel_model :spa.model.peopel
+        } );
+        spa.chat.initModule( jqueryMap.$container );
         stateMap.is_chat_retracted = true;
-        jqueryMap.$chat.attr('title',configMap.chat_retract_title).click(onClickChat);
-        $(window).bind('hashchange',onHashchange).trigger('hashchange');
+        //jqueryMap.$chat.attr('title',configMap.chat_retract_title).click(onClickChat);
+        $(window).bind('resize',onResize).bind('hashchange',onHashchange).trigger('hashchange');
+        $.gevent.subscribe($container, 'spa-login', onLogin);
+        $.gevent.subscribe($container, 'spa-logout', onLogout);
+
+        jqueryMap.$acct.text( 'Please sign-in' ).bind( 'utap', onTapAcct );
     }
     return { initModule:initModule };
 }())
