@@ -28,7 +28,7 @@ spa.chat = (function () {
                 + '<div class="spa-chat-list">'
                     + '<div class="spa-chat-list-box"></div>'
                 + '</div>'
-                + '<div class="spa-chat-msgs">'
+                + '<div class="spa-chat-msg">'
                     + '<div class="spa-chat-msg-log"></div>'
                     + '<div class="spa-chat-msg-in">' +
                         + '<form class="spa-chat-msg-form">'
@@ -68,7 +68,7 @@ spa.chat = (function () {
         slider_opened_min_em :10,
         window_height_min_em :20,
         chat_model: null,
-        peopel_model: null,
+        people_model: null,
         set_chat_anchor: null
     },
     stateMap  = {
@@ -100,11 +100,11 @@ spa.chat = (function () {
         stateMap.position_type = 'closed';
 
         configMap.chat_model = null;
-        configMap.peopel_model = null;
+        configMap.people_model = null;
         configMap.set_chat_anchor = null;
 
         return true;
-    }
+    };
     setJqueryMap = function () {
         //var $container = stateMap.$container;
         //jqueryMap = { $container : $container };
@@ -130,7 +130,7 @@ spa.chat = (function () {
     //计算由模块管理的元素的像素尺寸
     setPxSizes = function () {
         var px_per_em, window_height_em, opened_height_em;
-        px_per_em = getEmSize( jqueryMap.$slider.get(0) );
+        px_per_em = spa.util_b.getEmSize( jqueryMap.$slider.get(0) );
         //计算窗口高度，单位是em
         window_height_em = Math.floor(
             (jqueryMap.$window.height() /px_per_em) + 0.5
@@ -157,7 +157,7 @@ spa.chat = (function () {
     setSliderPosition = function( position_type, callback ) {
         var height_px, animate_time, slider_title, toggle_text;
 
-        if( position_type === 'opened' && configMap.peopel_model.get_user().get_is_anon()) {return false;}
+        //if( position_type === 'opened' && spa.people.get_user().get_is_anon()) {return false;}
         if( stateMap.position_type === position_type ) {
             if( position_type === 'opened'){
                 jqueryMap.$input.focus();
@@ -292,11 +292,11 @@ spa.chat = (function () {
     }
 
     onListchange = function ( event ) {
-        var vlist_html = String(),
-            people_db = configMap.peopel_model.get_db(),
+        var list_html = String(),
+            people_db = configMap.people_model.get_db(),
             chatee = configMap.chat_model.get_chatee();
 
-        people_db.each(function( person, idx ) {
+        people_db().each(function( person, idx ) {
             var select_class = '';
 
             if(person.get_is_anon() || person.get_is_user()){return true}
@@ -325,7 +325,7 @@ spa.chat = (function () {
     onUpdatechat = function (event,msg_map) {
         var is_user, sender_id = msg_map.sender_id,msg_text = msg_map.msg_text,
             chatee = configMap.chat_model.get_chatee() || {},
-            sender = configMap.peopel_model.get_by_cid( sender_id );
+            sender = configMap.people_model.get_by_cid( sender_id );
 
         if( !sender ) {
             writeAlert( msg_text );
@@ -345,11 +345,16 @@ spa.chat = (function () {
         }
     };
 
-    onLogin = function (event, login_user){
+    onLogin = function ( event, login_user ) {
+        configMap.set_chat_anchor('opened');
+    };
+
+    onLogout = function (event, login_user){
         configMap.set_chat_anchor('closed');
         jqueryMap.$title.text('Chat');
         clearChat();
-    }
+    };
+
     //创建configModule方法，每当功能模块设置setting时调用
     configModule = function ( input_map ) {
         spa.util.setConfigMap({
@@ -368,7 +373,7 @@ spa.chat = (function () {
         setPxSizes();
 
         jqueryMap.$toggle.prop( 'title', configMap.slider_closed_title);
-        jqueryMap.$head.click( onTapToggle );
+       // jqueryMap.$head.click( onTapToggle );
         stateMap.position_type = 'closed';
 
         $list_box = jqueryMap.$list_box;
@@ -387,8 +392,8 @@ spa.chat = (function () {
     };
     //到处模板方法，这两个方法几乎是所有功能模块的标配方法
     return {
-        setSliderPosition : setSliderPosition,
         configModule : configModule,
+        setSliderPosition : setSliderPosition,
         initModule   : initModule,
         removeSlider : removeSlider,
         handleResize : handleResize

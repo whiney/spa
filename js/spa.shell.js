@@ -207,13 +207,13 @@ spa.shell = (function(){
         stateMap.$container = $container;
         $container.html(configMap.main_html);
         setJqueryMap();
+        spa.chat.initModule( jqueryMap.$container );
+        stateMap.is_chat_retracted = true;
         spa.chat.configModule( {
             set_chat_anchor : setChatAnchor,
             chat_model :spa.model.chat,
-            peopel_model :spa.model.peopel
+            people_model :spa.model.people
         } );
-        spa.chat.initModule( jqueryMap.$container );
-        stateMap.is_chat_retracted = true;
         //jqueryMap.$chat.attr('title',configMap.chat_retract_title).click(onClickChat);
         $(window).bind('resize',onResize).bind('hashchange',onHashchange).trigger('hashchange');
         $.gevent.subscribe($container, 'spa-login', onLogin);

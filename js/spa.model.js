@@ -60,7 +60,7 @@ spa.model = (function (){
                     is_chatee_online = true;
                     chatee = person;
                 }
-                makePerson( make_person_map );
+                //makePerson( make_person_map );
             }
 
             stateMap.people_db.sort('name');
@@ -236,7 +236,7 @@ spa.model = (function (){
             return stateMap.people_cid_map[ cid ];
         };
 
-        get_db = function () { return stateMap.people_db; };
+        get_db = function () {  return stateMap.people_db; };
 
         get_user = function () { return stateMap.user; };
 
@@ -277,8 +277,6 @@ spa.model = (function (){
     }());
 
     initModule = function () {
-        var i, people_list, person_map;
-
         stateMap.anon_user = makePerson({
             cid  : configMap.anon_id,
             id   : configMap.anon_id,
