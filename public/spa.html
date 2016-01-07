@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html"; charset="utf-8">
+	<meta http-equiv="x-ua-compatible" content="IE=edge">
+	<title>SPA</title>
+	<!-- stylesheets -->
+	<link rel="stylesheet" href="css/spa.css" type="text/css">
+	<link rel="stylesheet" href="css/spa.chat.css" type="text/css">
+	<link rel="stylesheet" href="css/spa.shell.css" type="text/css">
+	<link rel="stylesheet" href="css/spa.avtr.css" type="text/css">
+	<!-- third-party JavaScript -->
+	<script type="text/javascript" src="js/jq/jquery-1.9.1.min.js"></script>
+	<script type="text/javascript" src="js/jq/jquery.uriAnchor.js"></script>
+	<script type="text/javascript" src="js/jq/jquery.event.gevent.js"></script>
+	<script type="text/javascript" src="js/jq/jquery.event.ue.js"></script>
+	<script type="text/javascript" src="js/jq/taffy.js"></script>
+	<!-- our JavaScript -->
+	<script type="text/javascript" src="js/spa.js"></script>
+	<script type="text/javascript" src="js/spa.util.js"></script>
+	<script type="text/javascript" src="js/spa.data.js"></script>
+	<script type="text/javascript" src="js/spa.fake.js"></script>
+	<script type="text/javascript" src="js/spa.model.js"></script>
+	<script type="text/javascript" src="js/spa.util_b.js"></script>
+	<script type="text/javascript" src="js/spa.shell.js"></script>
+	<script type="text/javascript" src="js/spa.chat.js"></script>
+	<script type="text/javascript" src="js/spa.avtr.js"></script>
+	<script>
+		/*传统的网页，把脚本放到body容器后面，静态的HTML和CSS在JavaScript加载完成之前显示，通常会使页面渲染更快
+		 * 单页面应用，他们使用JavaScript来生成HTML，因为将脚本放置在头部之外，并不能更快的渲染页面。相反，我们放在head区块里，以便改进组织结构和易读性。
+		 * */
+
+		/*
+		* 当加载spa.html时，它加载了所有的CSS和JS，然后页面中的脚本会做初始的内务工作，初始化空间模块（spa/js/spa.js）提供一个页面元素（spa div）供其使用
+		* */
+		$(function(){
+			spa.initModule($('#spa'));
+		});
+	</script>
+</head>
+<body>
+	<div id="spa"></div>
+</body>
+</html>
