@@ -1,12 +1,12 @@
 ### Single Page Web Application
 ----
 #### 单页面应用 JavaScript从前端到后端：
-+ ![](index_files/spa.jpg)
++ ![](http://7xpvaa.com1.z0.glb.clouddn.com/spa.jpg)
 
 + ###### 是不是很疑惑，来，我们通过与传统网站的对比来看一下。
- - 传统网站![](index_files/spa1.jpg)
+ - 传统网站![](http://7xpvaa.com1.z0.glb.clouddn.com/spa1.jpg)
 
- - 单页应用![](index_files/spa2.jpg)
+ - 单页应用![](http://7xpvaa.com1.z0.glb.clouddn.com/spa2.jpg)
 
 + ###### 通过图片，我们可以了解到。
  - 业务逻辑和HTML生成全部交给了前台。服务器和数据库更专注了他们应该做的事情。
