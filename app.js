@@ -6,7 +6,7 @@
 
 var http    = require('http'),
     express = require('express'),
-
+    routes  = require('./lib/routes'),
     app     = express(),
 
     server  = http.createServer(app);
@@ -30,9 +30,7 @@ app.configure('production', function () {
     app.use( express.errorHandler() );
 });
 
-app.get('/', function ( request, response ) {
-    response.redirect( '/spa.html ');
-});
+routes.configRoutes( app, server );
 
 server.listen( 3000 );
 console.log(
