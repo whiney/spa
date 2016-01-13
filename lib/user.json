@@ -13,7 +13,7 @@
       "maxLength" :127
     },
     "is_online" : {
-      "type" : 'boolean'
+      "type" : "boolean"
     },
     "css_map" : {
       "type" : "object",
