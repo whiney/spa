@@ -1,57 +1,26 @@
-### Single Page Web Application
-----
-#### 单页面应用 JavaScript从前端到后端：
-+ ![](http://7xpvaa.com1.z0.glb.clouddn.com/spa.jpg)
+# Single Page Web Application
 
-+ ###### 是不是很疑惑，来，我们通过与传统网站的对比来看一下。
- - 传统网站![](http://7xpvaa.com1.z0.glb.clouddn.com/spa1.jpg)
+This demo is based on single page web application's book.
+if you read book.you can use it.Because you can save the time to write code, focus on the understanding of the author's ideas.
+wish you like it
 
- - 单页应用![](http://7xpvaa.com1.z0.glb.clouddn.com/spa2.jpg)
+###### feature
+---
++ nodejs （web application）
++ mongoDB （database）
++ language（JavaScript）
++ Framework（express）
 
-+ ###### 通过图片，我们可以了解到。
- - 业务逻辑和HTML生成全部交给了前台。服务器和数据库更专注了他们应该做的事情。
- - 如果业务逻辑和HTML生成全部交给了前台，那我们编写JS的规模会异常的庞大。
+###### the web framework:
+---
+MongoDB+Express.js+JS+Node.js
 
-#### 单页面应用：
-+ 早起历史
-  - Java的applet
-  - flash插件
-  - js的按揭计算器
-+ 优势
-  - 不需要插件（不用短信插件的安装和维护以及操作系统的兼容性）
-  - 不臃肿（比插件需要的额外资源少的多）
-  - 一种客户端语言（使用一种语言降低复杂性）
-  - 更流畅和更具交互性
-  - node.js web服务器，json是一种数据格式
-+ 生成式的JS和原生的js
-  - 生成式的js，开发人员用另一种语言来编写JS然后转换成js（转化发生在运行时，要么发生在单独的生成阶段）
-   - google web toolkit `*`
-   - cappuccino `*`
-   - coffeeScript（语法糖） `*`
-  - 分析一下原生和生成式，推崇原生JS
+###### get start
+---
+1. you need install nodejs,mongoDB,git
+2. git clone
+3. npm install
+4. node app.js
 
-| 方面        | 解释           |
-| ------------- |-------------|
-| 熟悉度     | 用抽象层级的语言，还不如直接用js |
-| 框架       | 在服务和客户端一致的构建库GWT，使得整个体系结构紧密的结合在一起     |
-| 多目标     | 为不同的目标生成代码，比如有的文件给IE，有的文件给别的浏览器      |
-| 成熟度     | js没有什么结构化可言，Java类型安全的缺失，ror结构化明显的缺失。可以结合代码验证工具，代码标准缓解问题 |
-
-#### 单页面应用客户端：
-+ 页面布局
-+ 模块滑动
-
-#### 单页面应用服务器：
-+ 服务器：node.js
-  - 为什么选择node.js
-   - 服务器就是应用，无须在单独搭建单独的应用服务器与之交互。
-   - 服务器语言也是JS，可以消除一种语言编写服务器应用，另一种语言编写单页面应用的认知负荷。比如：单页面应用和服务端使用相同的数据验证。
-   - node.js是非阻塞和时间驱动的。就是说硬件上的单个node.js实例，可以开启数万或者数十万的并发链接。可以用于实时消息传输的链接。
-   - node.js社区比较完善
-  - node.js处理网络请求的方式不同于其他大多数服务器平台
-   - 大多数HTTP服务器需要维护进程池或者线程池，准备为到达的请求提供服务。
-   - node.js只有一个时间队列，会处理每个到达的请求，甚至在主时间队列上，会把请求的部分处理切分成单独的队列。
-+ web框架：express
- - 轻量级框架，是在Sinatra之后设计出来的
- - express提供了Connect的所有中间件方法（基本认证，会话管理，静态文件服务，表单处理）
- - express 支持根据环境设置来切换配置的概念
+if you use run socket'demo
+you should `node socket.js`
